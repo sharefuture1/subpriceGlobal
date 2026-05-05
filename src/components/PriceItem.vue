@@ -75,20 +75,17 @@ const rankClass = computed(() => ['gold','silver','bronze'][props.idx] || '')
 
 <style scoped>
 .price-item {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
   padding: 14px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  transition: all 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   overflow: hidden;
   animation: slideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   content-visibility: auto;
   contain-intrinsic-size: 0 80px;
+  border-radius: var(--radius-md);
 }
 
 .price-item::before {
@@ -97,26 +94,36 @@ const rankClass = computed(() => ['gold','silver','bronze'][props.idx] || '')
   left: 0; top: 0; bottom: 0;
   width: 3px;
   background: var(--border);
-  transition: background 0.2s;
+  transition: background var(--transition-fast);
 }
 
 .price-item:hover {
   border-color: var(--accent);
   background: var(--card-hover-bg);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 0 0 1px var(--border-accent);
+  box-shadow: 0 8px 24px var(--shadow), 0 0 0 1px var(--border-accent);
 }
 .price-item:hover::before { background: var(--accent); }
 
 .price-item.best {
   border-color: var(--accent);
-  background: var(--card);
-  box-shadow: 0 0 30px var(--glow), inset 0 0 30px var(--glow);
-  padding-top: 18px;
+  padding-top: 20px;
+  box-shadow: 0 0 30px var(--glow), inset 0 0 15px var(--glow);
 }
-.price-item.best::before { background: linear-gradient(to bottom, var(--accent), #00c4e8); }
-.dark .price-item.best { background: rgba(0,229,160,0.04); }
-.light .price-item.best { background: rgba(0,100,200,0.03); }
+
+.dark .price-item.best {
+  background: linear-gradient(110deg, rgba(0, 229, 160, 0.06), rgba(0, 196, 232, 0.03));
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(0, 229, 160, 0.03);
+}
+
+.light .price-item.best {
+  background: rgba(0, 196, 140, 0.03);
+  box-shadow: 0 4px 20px rgba(0, 160, 120, 0.08);
+}
+
+.price-item.best::before {
+  background: linear-gradient(to bottom, var(--accent), #00c4e8);
+}
 
 .price-item.silver::before { background: linear-gradient(to bottom, #c0c0c0, #a0a0a0); }
 .price-item.bronze::before { background: linear-gradient(to bottom, #cd7f32, #a06020); }
@@ -126,25 +133,34 @@ const rankClass = computed(() => ['gold','silver','bronze'][props.idx] || '')
   transform: translateX(-50%);
   font-size: 9px; font-weight: 800; letter-spacing: 0.5px;
   background: linear-gradient(135deg, var(--accent), #00c4e8);
-  color: #000; padding: 2px 12px; border-radius: 0 0 10px 10px;
+  color: #000; padding: 3px 12px; border-radius: 0 0 10px 10px;
   text-transform: uppercase; z-index: 2;
-  box-shadow: 0 2px 10px rgba(0,229,160,0.2);
+  box-shadow: 0 2px 10px var(--glow-strong);
 }
 
 .rank-badge {
-  width: 30px; height: 30px; border-radius: 10px;
+  width: 32px; height: 32px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; font-size: 13px; font-weight: 700;
   background: var(--surface2); border: 1px solid var(--border);
-  transition: all 0.2s;
+  transition: all var(--transition-fast);
 }
-.rank-badge.gold { background: rgba(255,209,102,0.15); border-color: rgba(255,209,102,0.3); }
-.rank-badge.silver { background: rgba(192,192,192,0.12); border-color: rgba(192,192,192,0.25); }
-.rank-badge.bronze { background: rgba(205,127,50,0.12); border-color: rgba(205,127,50,0.25); }
-.rank-emoji { font-size: 15px; line-height: 1; }
+
+.dark .rank-badge {
+  background: var(--surface2);
+  border-color: rgba(255, 255, 255, 0.03);
+  color: var(--muted2);
+}
+
+.light .rank-badge {
+  background: var(--pill-bg);
+}
+
+.rank-emoji { font-size: 16px; line-height: 1; }
 .rank-num { font-size: 11px; color: var(--muted); font-family: var(--font-sans); }
 
-.flag-wrap { font-size: 26px; flex-shrink: 0; line-height: 1; filter: saturate(1.1); }
+.flag-wrap { font-size: 26px; flex-shrink: 0; line-height: 1; filter: saturate(1.1); transition: transform 0.2s; }
+.price-item:hover .flag-wrap { transform: scale(1.1); }
 
 .country-info { flex: 1; min-width: 0; }
 .country-name {
@@ -161,21 +177,30 @@ const rankClass = computed(() => ['gold','silver','bronze'][props.idx] || '')
   font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
   background: var(--surface2); border: 1px solid var(--border);
   padding: 1px 5px; border-radius: 4px;
+  color: var(--muted);
 }
 
 .price-right { text-align: right; flex-shrink: 0; }
 .cny-price {
   font-family: var(--font-sans); font-size: 20px; font-weight: 800;
   letter-spacing: -0.5px; color: var(--text);
-  transition: color 0.2s;
+  transition: color var(--transition-fast);
 }
+
 .cny-price.best {
   background: linear-gradient(135deg, var(--accent), #00c4e8);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
+
+.light .cny-price.best {
+  background: linear-gradient(135deg, #009a6e, #0077b3);
+  -webkit-background-clip: text; background-clip: text;
+}
+
 .cny-price.obfuscated::after {
   content: attr(data-val);
 }
+
 .save-badge {
   display: inline-flex; align-items: center; gap: 3px;
   font-size: 10px; color: var(--accent2); font-weight: 700; margin-top: 3px;
@@ -194,9 +219,10 @@ const rankClass = computed(() => ['gold','silver','bronze'][props.idx] || '')
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-fast);
   margin-top: 6px;
   margin-left: auto;
+  opacity: 0.4;
 }
 
 .price-item:hover .report-btn {
@@ -204,10 +230,11 @@ const rankClass = computed(() => ['gold','silver','bronze'][props.idx] || '')
 }
 
 .report-btn:hover {
-  background: var(--accent-dim);
-  color: var(--accent);
+  background: var(--accent);
+  color: #000;
   border-color: var(--accent);
   transform: scale(1.1);
+  box-shadow: 0 4px 12px var(--glow-strong);
 }
 
 @keyframes slideIn {
@@ -216,10 +243,10 @@ const rankClass = computed(() => ['gold','silver','bronze'][props.idx] || '')
 }
 
 @media (max-width: 480px) {
-  .price-item { padding: 12px 13px; gap: 10px; }
-  .cny-price { font-size: 17px; }
+  .price-item { padding: 12px 14px; gap: 10px; }
+  .cny-price { font-size: 18px; }
   .country-name { font-size: 13px; }
-  .flag-wrap { font-size: 22px; }
-  .rank-badge { width: 26px; height: 26px; }
+  .flag-wrap { font-size: 24px; }
+  .rank-badge { width: 28px; height: 28px; }
 }
 </style>

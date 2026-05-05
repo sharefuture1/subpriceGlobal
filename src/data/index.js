@@ -4,6 +4,7 @@
 // ============================================================
 
 import { COUNTRIES, countryById } from './countries/index.js'
+import { EXCHANGE_RATES } from './exchangeRates.js'
 
 // 分类配置
 export const CATEGORIES = {
@@ -43,19 +44,30 @@ export async function buildAllProducts() {
 }
 
 // 获取产品列表（合并国家信息）
-function enrichProduct(product) {
+function enrichProduct(product, rates = EXCHANGE_RATES) {
+  const currentRates = rates || EXCHANGE_RATES
   return {
     ...product,
     enrichedCountries: (product.monthly || []).map(entry => {
       const country = countryById(entry.id)
+      const currency = country?.currency || ''
+      const price = entry.price || 0
+      
+      // 使用传入的汇率计算
+      const rate = currentRates[currency] || 0
+      const cny = entry.cny || +(price * rate).toFixed(2)
+      
+      // 构造 local 显示字符串
+      const localDisplay = entry.local || `${country?.symbol || ''} ${price}`
+      
       return {
         id: entry.id,
         name: country?.name || entry.id,
         nameZh: country?.nameZh || country?.name || entry.id,
         flag: country?.flag || '🌍',
-        currency: country?.currency || '',
-        local: entry.local,
-        cny: entry.cny,
+        currency: currency,
+        local: localDisplay,
+        cny: cny,
       }
     })
   }

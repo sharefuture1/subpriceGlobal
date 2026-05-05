@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch } from 'vue';
 import * as api from '../services/api.js';
-import { getStaticProducts, enrichProduct } from '../data/index.js';
+import { getStaticProducts, enrichProduct, COUNTRIES } from '../data/index.js';
+import { EXCHANGE_RATES } from '../data/exchangeRates.js';
 
 export const useProductStore = defineStore('product', () => {
   const loading = ref(false);
@@ -10,6 +11,7 @@ export const useProductStore = defineStore('product', () => {
   const staticProductsMap = ref({}); 
   const loadedCategories = ref(new Set());
   const allCountries = ref([]);
+  const rates = ref({ ...EXCHANGE_RATES });
 
   const currentCat = ref('ai');
   const currentProduct = ref('chatgpt');
@@ -17,6 +19,7 @@ export const useProductStore = defineStore('product', () => {
   const searchQuery = ref('');
   const debouncedSearchQuery = ref('');
   const currentSort = ref('price');
+  const currentRegion = ref('all');
 
   // Debounce search query
   let searchTimeout = null;
@@ -42,6 +45,23 @@ export const useProductStore = defineStore('product', () => {
         dataSource.value = 'api';
         return;
       }
+    }
+    
+    // Fetch rates
+    try {
+      const rateData = await fetch('https://api.exchangerate-api.com/v4/latest/CNY').then(r => r.json());
+      if (rateData && rateData.rates) {
+        // The API returns 1 CNY = X Foreign. We need 1 Foreign = X CNY.
+        // So Rate = 1 / rateData.rates[Currency]
+        const newRates = { CNY: 1.0 };
+        for (const [code, val] of Object.entries(rateData.rates)) {
+          newRates[code] = +(1 / val).toFixed(4);
+        }
+        rates.value = newRates;
+        console.log('[productStore] Rates updated from API');
+      }
+    } catch (e) {
+      console.warn('[productStore] Failed to fetch live rates, using static fallback');
     }
 
     loading.value = true;
@@ -96,7 +116,10 @@ export const useProductStore = defineStore('product', () => {
     const products = await getStaticProducts(cat);
     const enriched = {};
     products.forEach(p => {
-      enriched[p.id] = enrichProduct({ ...p, cat });
+      // Pass the current rates to enrichProduct if we want to use live rates
+      // But enrichProduct is currently using the imported static rates.
+      // Let's modify enrichProduct to accept rates as an argument.
+      enriched[p.id] = enrichProduct({ ...p, cat }, rates.value);
     });
     staticProductsMap.value = { ...staticProductsMap.value, ...enriched };
     loadedCategories.value.add(cat);
@@ -123,6 +146,15 @@ export const useProductStore = defineStore('product', () => {
     }
     if (!product) return [];
     let list = (product.enrichedCountries || []).map(c => ({ ...c }));
+    
+    // Region filter
+    if (currentRegion.value !== 'all') {
+      list = list.filter(c => {
+        const country = allCountries.value.find(x => x.id === c.id) || COUNTRIES.find(x => x.id === c.id);
+        return country?.region === currentRegion.value;
+      });
+    }
+
     if (annualMode.value) list = list.map(c => ({ ...c, cny: +(c.cny * 12 * 0.83).toFixed(2) }));
     return list;
   });
@@ -176,7 +208,7 @@ export const useProductStore = defineStore('product', () => {
 
   return {
     loading, dataSource, allCountries, currentCat, currentProduct,
-    annualMode, searchQuery, currentSort,
+    annualMode, searchQuery, currentSort, currentRegion,
     allProducts, filteredProducts, sortedList, summary,
     fetchInitialData, setCategory
   };

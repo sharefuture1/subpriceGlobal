@@ -1,15 +1,27 @@
 <template>
   <header class="header">
-    <div class="header-badge">
-      <img src="https://pub-b1ca55f26b8c4b68bed9070080a97700.r2.dev/subprice.jpg" alt="Logo" class="badge-logo" />
-      Global Price Intelligence
+    <div class="header-top">
+      <div class="header-badge premium-glass">
+        <div class="badge-dot"></div>
+        Global Price Intelligence
+      </div>
+      <div v-if="dataSource === 'api'" class="live-status">
+        <span class="live-dot"></span>
+        <span class="live-text">Real-time Data</span>
+      </div>
     </div>
-    <h1>{{ t('header.title') }}<br><span class="gradient-text">{{ t('header.titleAccent') }}</span></h1>
+    
+    <h1 class="main-title">
+      {{ t('header.title') }}
+      <span class="title-accent">
+        {{ t('header.titleAccent') }}
+        <svg class="title-underline" viewBox="0 0 100 20" preserveAspectRatio="none">
+          <path d="M0,10 Q50,20 100,10" stroke="currentColor" stroke-width="3" fill="none" />
+        </svg>
+      </span>
+    </h1>
+    
     <p class="subtitle">{{ t('header.subtitle') }}</p>
-    <div v-if="dataSource === 'api'" class="live-badge">
-      <span class="live-dot"></span>
-      LIVE
-    </div>
   </header>
 </template>
 
@@ -22,40 +34,50 @@ defineProps({
 </script>
 
 <style scoped>
-.header { position: relative; margin-bottom: 28px; }
+.header { position: relative; margin-bottom: 40px; padding-top: 20px; }
+
+.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+
 .header-badge {
-  display: inline-flex; align-items: center; gap: 7px;
-  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--accent); margin-bottom: 12px; padding: 5px 12px;
-  background: var(--accent-dim); border: 1px solid var(--border-accent);
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 10px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--accent-text); padding: 6px 14px;
   border-radius: 100px;
 }
-.badge-logo {
-  width: 24px; height: 24px; border-radius: 6px;
-  object-fit: cover; border: 1px solid var(--border-accent);
+
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+.live-status { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; color: var(--muted); }
+.live-dot { width: 5px; height: 5px; border-radius: 50%; background: #ff4d6a; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 77, 106, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 77, 106, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 77, 106, 0); } }
+
+.main-title {
+  font-family: var(--font-sans); font-size: clamp(32px, 8vw, 52px);
+  font-weight: 800; line-height: 1; letter-spacing: -1.5px; margin-bottom: 16px;
+  color: var(--text);
 }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
-.live-badge {
-  position: absolute; top: 4px; right: 0;
-  display: flex; align-items: center; gap: 5px;
-  font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
-  color: var(--accent); background: var(--accent-dim);
-  border: 1px solid var(--border-accent); padding: 3px 8px; border-radius: 6px;
+
+.title-accent {
+  position: relative;
+  display: inline-block;
+  color: var(--accent-text);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--blue) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
-.live-dot {
-  width: 5px; height: 5px; border-radius: 50%; background: var(--accent);
-  animation: pulse 1.5s ease-in-out infinite;
+
+.title-underline {
+  position: absolute; bottom: -8px; left: 0; width: 100%; height: 12px;
+  color: var(--accent); opacity: 0.3;
 }
-h1 {
-  font-family: var(--font-sans); font-size: clamp(28px, 7vw, 44px);
-  font-weight: 800; line-height: 1.1; letter-spacing: -1px; margin-bottom: 10px;
+
+.subtitle {
+  color: var(--muted); font-size: 15px; font-weight: 500;
+  line-height: 1.6; max-width: 520px;
 }
-.gradient-text {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--blue) 50%, var(--accent) 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  animation: shimmer 4s linear infinite;
+
+@media (max-width: 640px) {
+  .header { margin-bottom: 32px; }
+  .main-title { letter-spacing: -1px; }
 }
-@keyframes shimmer { to { background-position: 200% center; } }
-.subtitle { color: var(--muted2); font-size: 14px; font-weight: 400; line-height: 1.7; max-width: 500px; }
 </style>

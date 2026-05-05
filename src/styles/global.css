@@ -10,58 +10,93 @@
   --gold: #ffd166;
   --blue: #5b9cff;
   --danger: #ff4d6a;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-med: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* ── Dark theme ── */
 .dark {
-  --bg: #060611;
-  --bg2: #0c0c1d;
-  --surface: #0e0e24;
-  --surface2: #131330;
-  --card: #111128;
-  --card2: #18183a;
-  --border: rgba(255,255,255,0.1);
-  --border2: rgba(255,255,255,0.16);
-  --border-accent: rgba(0,229,160,0.3);
-  --text: #f0f0f8;
-  --text2: #060611;
-  --muted: #8b8b9b;
-  --muted2: #a5a5b5;
-  --nav-bg: rgba(6,6,17,0.85);
-  --input-bg: #161630;
-  --shadow: 0 8px 32px rgba(0,0,0,0.6);
-  --glow: rgba(0,229,160,0.15);
-  --glow-strong: rgba(0,229,160,0.3);
-  --card-hover-bg: #1c1c3e;
-  --sep: rgba(255,255,255,0.08);
-  --note-bg: rgba(255,107,53,0.1);
-  --note-border: rgba(255,107,53,0.25);
+  --bg: #03030b;
+  --bg2: #070715;
+  --surface: rgba(12, 12, 32, 0.7);
+  --surface2: #0e0e24;
+  --card: rgba(20, 20, 45, 0.6);
+  --card2: #161635;
+  --card-solid: #0d0d22;
+  --border: rgba(255, 255, 255, 0.05);
+  --border2: rgba(255, 255, 255, 0.1);
+  --border-accent: rgba(0, 229, 160, 0.2);
+  --text: #f1f3f9;
+  --text2: #03030b;
+  --text-secondary: #b0b4d0;
+  --muted: #717696;
+  --muted2: #8a8fb0;
+  --nav-bg: rgba(3, 3, 11, 0.75);
+  --input-bg: rgba(18, 18, 42, 0.8);
+  --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --glow: rgba(0, 229, 160, 0.08);
+  --glow-strong: rgba(0, 229, 160, 0.18);
+  --card-hover-bg: rgba(26, 26, 58, 0.85);
+  --sep: rgba(255, 255, 255, 0.04);
+  --note-bg: rgba(255, 107, 53, 0.04);
+  --note-border: rgba(255, 107, 53, 0.15);
+  --skeleton-base: rgba(255, 255, 255, 0.04);
+  --skeleton-shine: rgba(255, 255, 255, 0.02);
+  --toggle-track: rgba(255, 255, 255, 0.08);
+  --pill-bg: rgba(255, 255, 255, 0.03);
+  --accent-text: #00f2aa;
+  --blue-dim: rgba(91, 156, 255, 0.08);
+  --blue-border: rgba(91, 156, 255, 0.2);
+  color-scheme: dark;
 }
 
 /* ── Light theme ── */
 .light {
-  --bg: #eef0f9;
-  --bg2: #e4e7f8;
-  --surface: #ffffff;
-  --surface2: #f5f7ff;
-  --card: #ffffff;
+  --bg: #f4f6fb;
+  --bg2: #ebedf5;
+  --surface: rgba(255,255,255,0.8);
+  --surface2: #f0f2fc;
+  --card: rgba(255,255,255,0.82);
   --card2: #f0f2fc;
-  --border: rgba(0,0,0,0.07);
-  --border2: rgba(0,0,0,0.12);
-  --border-accent: rgba(0,100,200,0.2);
+  --card-solid: #ffffff;
+  --border: rgba(15,17,82,0.06);
+  --border2: rgba(15,17,82,0.1);
+  --border-accent: rgba(0,160,120,0.2);
   --text: #0f1152;
   --text2: #ffffff;
-  --muted: #7a7aaa;
-  --muted2: #5555aa;
-  --nav-bg: rgba(238,240,249,0.88);
-  --input-bg: #f5f7ff;
-  --shadow: 0 8px 32px rgba(0,0,30,0.1);
-  --glow: rgba(0,80,200,0.08);
-  --glow-strong: rgba(0,80,200,0.18);
-  --card-hover-bg: #f0f2ff;
-  --sep: rgba(0,0,0,0.06);
-  --note-bg: rgba(255,107,53,0.06);
-  --note-border: rgba(255,107,53,0.2);
+  --text-secondary: #3a3a6e;
+  --muted: #7171a0;
+  --muted2: #5f5f8f;
+  --nav-bg: rgba(244,246,251,0.8);
+  --input-bg: rgba(255,255,255,0.7);
+  --shadow: 0 10px 30px rgba(15,17,82,0.04);
+  --shadow-sm: 0 4px 12px rgba(15,17,82,0.03);
+  --glow: rgba(0,160,120,0.06);
+  --glow-strong: rgba(0,160,120,0.12);
+  --card-hover-bg: rgba(255,255,255,0.95);
+  --sep: rgba(15,17,82,0.05);
+  --note-bg: rgba(255,107,53,0.03);
+  --note-border: rgba(255,107,53,0.12);
+  --skeleton-base: rgba(15,17,82,0.04);
+  --skeleton-shine: rgba(255,255,255,0.5);
+  --toggle-track: rgba(15,17,82,0.08);
+  --pill-bg: rgba(15,17,82,0.02);
+  --accent: #00b884;
+  --accent-dim: rgba(0,184,132,0.08);
+  --accent-text: #008f66;
+  --blue: #4075d0;
+  --blue-dim: rgba(64,117,208,0.06);
+  --blue-border: rgba(64,117,208,0.15);
+  --gold: #d49c00;
+  --accent2: #d85025;
+  --danger: #cf3a52;
+  color-scheme: light;
 }
 
 .container {
@@ -83,7 +118,7 @@ body {
   font-family: var(--font-sans);
   min-height: 100vh;
   -webkit-text-size-adjust: 100%;
-  transition: background 0.3s, color 0.3s;
+  transition: background 0.4s ease, color 0.3s ease;
   overflow-x: hidden;
 }
 
@@ -104,21 +139,67 @@ body {
 /* Utility Classes */
 .glass-panel {
   background: var(--nav-bg);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid var(--border);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--card);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .glass-card:hover {
+  background: var(--card-hover-bg);
+  border-color: var(--border-accent);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 20px var(--glow);
+  transform: translateY(-2px);
 }
 
 .light .glass-card {
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--card);
+  box-shadow: var(--shadow);
 }
 
-::selection { background: rgba(0,229,160,0.2); color: var(--text); }
+.premium-glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.light .premium-glass {
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(15, 17, 82, 0.05);
+  box-shadow: 0 10px 30px rgba(15, 17, 82, 0.05);
+}
+
+.liquid-border {
+  position: relative;
+  border-radius: inherit;
+}
+
+.liquid-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, var(--accent), var(--blue), var(--accent2));
+  background-size: 200% 200%;
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0.5;
+  animation: liquid 6s linear infinite;
+}
+
+@keyframes liquid {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.dark ::selection { background: rgba(0,229,160,0.25); color: #fff; }
+.light ::selection { background: rgba(0,160,120,0.15); color: var(--text); }
