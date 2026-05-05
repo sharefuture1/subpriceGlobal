@@ -157,6 +157,9 @@ import SkeletonItem from './components/features/SkeletonItem.vue'
 // Styles
 import './styles/global.css'
 
+import { initSecurity } from './utils/security.js'
+import { updateSEO } from './utils/seo.js'
+
 const { t, locale } = useI18n()
 const configStore = useConfigStore()
 const productStore = useProductStore()
@@ -242,41 +245,8 @@ onMounted(() => {
   console.log('[APP] onMounted fired, calling fetchInitialData');
   productStore.fetchInitialData()
 
-  // --- Anti-Copy & Anti-Debug Measures ---
-  
-  // 1. Disable Right-Click
-  document.addEventListener('contextmenu', (e) => {
-    e.preventDefault()
-  })
-
-  // 2. Block Shortcuts (F12, Cmd+Option+I, Cmd+S, Cmd+C)
-  document.addEventListener('keydown', (e) => {
-    // F12
-    if (e.key === 'F12') e.preventDefault()
-    
-    // Cmd/Ctrl + Shift + I/J/C (DevTools)
-    if ((e.metaKey || e.ctrlKey) && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) {
-      e.preventDefault()
-    }
-    
-    // Cmd/Ctrl + S (Save)
-    if ((e.metaKey || e.ctrlKey) && e.key.toUpperCase() === 'S') {
-      e.preventDefault()
-    }
-
-    // Optional: Cmd/Ctrl + U (View Source)
-    if ((e.metaKey || e.ctrlKey) && e.key.toUpperCase() === 'U') {
-      e.preventDefault()
-    }
-  })
-
-  // 3. Simple Console Clear / Debugger trick
-  setInterval(() => {
-    if (window.outerHeight - window.innerHeight > 160 || window.outerWidth - window.innerWidth > 160) {
-      console.clear()
-      console.log('%c检测到开发者工具已打开', 'color: red; font-size: 20px; font-weight: bold;')
-    }
-  }, 1000)
+  // Initialize Anti-Copy & Anti-Debug Measures
+  initSecurity()
 })
 
 const minPrice = computed(() => productStore.sortedList.length ? Math.min(...productStore.sortedList.map(c => c.cny)) : 0)
@@ -296,24 +266,7 @@ const sortOptions = computed(() => [
 // Dynamic SEO
 watch([() => productStore.currentProduct, () => configStore.locale], () => {
   const product = productStore.allProducts[productStore.currentProduct]
-  if (product) {
-    const productName = product.name
-    const suffix = configStore.locale === 'zh' ? '全球订阅价格对比 | SubPrice' : 'Global Subscription Price Comparison | SubPrice'
-    document.title = `${productName} ${suffix}`
-    
-    // Update meta description
-    const metaDesc = document.querySelector('meta[name="description"]')
-    if (metaDesc) {
-      const desc = configStore.locale === 'zh' 
-        ? `比较 ${productName} 在全球各国的订阅价格。实时汇率转换，找到最便宜的 ${productName} 订阅方案。`
-        : `Compare ${productName} subscription prices across different countries. Real-time currency conversion to find the cheapest ${productName} plan.`
-      metaDesc.setAttribute('content', desc)
-    }
-
-    // Update OG title
-    const ogTitle = document.querySelector('meta[property="og:title"]')
-    if (ogTitle) ogTitle.setAttribute('content', document.title)
-  }
+  updateSEO(product?.name, configStore.locale)
 }, { immediate: true })
 </script>
 
