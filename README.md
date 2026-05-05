@@ -109,7 +109,7 @@ subpriceGlobal/
 
 ### 后端部署（如需启用数据管理）
 
-请参考 [price-compare-api](https://github.com/sharefuture1/price-compare-api)（仓库未公开，请联系 @GlobalSubscription 获取），配置 `VITE_API_BASE` 环境变量。
+请参考 [price-compare-api](https://t.me/GlobalSubscription)（仓库未公开，请联系 @GlobalSubscription 获取），配置 `VITE_API_BASE` 环境变量。
 
 ---
 
