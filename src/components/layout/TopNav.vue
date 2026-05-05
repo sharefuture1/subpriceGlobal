@@ -1,7 +1,9 @@
 <template>
   <nav class="top-nav">
     <div class="nav-brand">
-      <span class="brand-icon">💰</span>
+      <div class="brand-logo-wrap">
+        <img src="https://pub-b1ca55f26b8c4b68bed9070080a97700.r2.dev/subprice.jpg" alt="SubPrice Logo" class="brand-logo" />
+      </div>
       <span class="brand-text">SubPrice</span>
     </div>
 
@@ -47,10 +49,16 @@ defineEmits(['open-submit', 'toggle-theme', 'toggle-locale'])
   border-bottom: 1px solid var(--border);
   transition: background 0.3s, border-color 0.3s;
 }
-.nav-brand { display: flex; align-items: center; gap: 7px; flex: 1; }
-.brand-icon { font-size: 20px; line-height: 1; }
+.nav-brand { display: flex; align-items: center; gap: 12px; flex: 1; }
+.brand-logo-wrap {
+  width: 42px; height: 42px; border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border); background: #000;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 15px rgba(0,229,160,0.25);
+}
+.brand-logo { width: 100%; height: 100%; object-fit: cover; }
 .brand-text {
-  font-weight: 800; font-size: 17px;
+  font-weight: 800; font-size: 19px;
   background: linear-gradient(135deg, var(--accent) 0%, #00c4e8 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; letter-spacing: -0.3px;

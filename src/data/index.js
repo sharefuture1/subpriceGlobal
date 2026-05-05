@@ -4,21 +4,6 @@
 // ============================================================
 
 import { COUNTRIES, countryById } from './countries/index.js'
-import aiProducts from './products/ai.js'
-import streamProducts from './products/stream.js'
-import musicProducts from './products/music.js'
-import creativeProducts from './products/creative.js'
-import cloudProducts from './products/cloud.js'
-import officeProducts from './products/office.js'
-import gameProducts from './products/game.js'
-import securityProducts from './products/security.js'
-
-// 静态数据（备用）
-const STATIC_PRODUCTS = {
-  ai: aiProducts, stream: streamProducts, music: musicProducts,
-  creative: creativeProducts, cloud: cloudProducts, office: officeProducts,
-  game: gameProducts, security: securityProducts
-}
 
 // 分类配置
 export const CATEGORIES = {
@@ -32,10 +17,24 @@ export const CATEGORIES = {
   security: { label: 'Security',        labelZh: '安全工具',   icon: '🔒' },
 }
 
-// 合并所有产品，附加 category
-function buildAllProducts() {
+/**
+ * Lazy load category products
+ */
+export async function getStaticProducts(category) {
+  try {
+    const module = await import(`./products/${category}.js`)
+    return module.default || module[category + 'Products']
+  } catch (e) {
+    console.error(`Failed to load static products for ${category}:`, e)
+    return []
+  }
+}
+
+// 合并所有产品，附加 category (Legacy support if needed, but better to load on demand)
+export async function buildAllProducts() {
   const all = []
-  for (const [cat, products] of Object.entries(STATIC_PRODUCTS)) {
+  for (const cat of Object.keys(CATEGORIES)) {
+    const products = await getStaticProducts(cat)
     for (const p of products) {
       all.push({ ...p, cat })
     }
@@ -43,14 +42,11 @@ function buildAllProducts() {
   return all
 }
 
-const allProducts = buildAllProducts()
-const PRODUCTS = Object.fromEntries(allProducts.map(p => [p.id, p]))
-
 // 获取产品列表（合并国家信息）
 function enrichProduct(product) {
   return {
     ...product,
-    enrichedCountries: product.monthly.map(entry => {
+    enrichedCountries: (product.monthly || []).map(entry => {
       const country = countryById(entry.id)
       return {
         id: entry.id,
@@ -65,29 +61,4 @@ function enrichProduct(product) {
   }
 }
 
-// 从 API 加载数据（如果后端可用）
-export async function loadFromAPI() {
-  try {
-    const base = import.meta.env.VITE_API_BASE || ''
-    const [categoriesRes, countriesRes, productsRes] = await Promise.all([
-      fetch(base + '/api/categories'),
-      fetch(base + '/api/countries'),
-      fetch(base + '/api/products'),
-    ])
-    if (!categoriesRes.ok || !countriesRes.ok || !productsRes.ok) {
-      throw new Error('API returned non-ok status')
-    }
-    const [categories, countries, productsMap] = await Promise.all([
-      categoriesRes.json(),
-      countriesRes.json(),
-      productsRes.json(),
-    ])
-    return { categories, countries, products: productsMap }
-  } catch (e) {
-    console.warn('API unavailable, using static data:', e.message)
-    return null
-  }
-}
-
-export { PRODUCTS, COUNTRIES, countryById, enrichProduct }
-export default PRODUCTS
+export { COUNTRIES, countryById, enrichProduct }

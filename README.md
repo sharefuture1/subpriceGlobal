@@ -1,146 +1,103 @@
-# 📉 SubPrice
+<p align="center">
+  <img src="https://pub-b1ca55f26b8c4b68bed9070080a97700.r2.dev/subprice.jpg" width="120" height="120" style="border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);" />
+</p>
 
-> 全球订阅服务比价工具 | Global Subscription Price Comparison
+<h1 align="center">📉 SubPrice</h1>
 
-**🔥 在线体验：** https://sub.future1.us/
+<p align="center">
+  <strong>全球订阅服务比价工具 | Global Subscription Price Intelligence</strong>
+</p>
 
-[![Vue](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://github.com/vuejs/vue)
-[![Vite](https://img.shields.io/badge/vite-latest-blueviolet.svg)](https://github.com/vitejs/vite)
-[![Pinia](https://img.shields.io/badge/pinia-latest-yellow.svg)](https://github.com/piniajs/pinia)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+<p align="center">
+  <a href="https://sub.future1.us/"><strong>🚀 立即体验：sub.future1.us</strong></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Vue-3.x-42b883?style=for-the-badge&logo=vue.js&logoColor=white" />
+  <img src="https://img.shields.io/badge/Vite-Latest-646cff?style=for-the-badge&logo=vite&logoColor=white" />
+  <img src="https://img.shields.io/badge/Pinia-Store-yellow?style=for-the-badge&logo=pinia&logoColor=white" />
+  <img src="https://img.shields.io/badge/PWA-Support-00838f?style=for-the-badge&logo=pwa&logoColor=white" />
+</p>
 
 ---
 
 ## 🌟 项目简介
 
-**SubPrice** 是一款基于 **Vue 3 + Vite** 构建的订阅服务全球比价工具，帮助用户一站式查看 AI、流媒体、音乐、创作工具、云服务等主流订阅产品在全球各地区的真实价格，轻松找到最优方案。
+**SubPrice** 是一款基于 **Vue 3 + Vite** 构建的现代化订阅服务全球比价工具。它采用极致的 **Liquid Glass (流体玻璃)** 设计风格，旨在为用户提供丝滑、透明的全球比价体验。
 
-### ✨ 核心功能
+无论你是想低价订阅 **ChatGPT Plus**、**YouTube Premium**，还是在寻找最便宜的 **Netflix** 区域，SubPrice 都能通过实时汇率计算为你提供一站式参考。
 
-- 🌍 **全球比价** — 覆盖土耳其、尼日利亚、阿根廷、中国、美国、欧盟等主流市场
-- 💹 **多货币换算** — 价格自动按汇率转换为参考货币，支持 CNY/USD/EUR 对比
-- 🌓 **深色/浅色模式** — Liquid Glass 设计风格，丝滑切换
-- 📱 **全响应式** — 完美适配手机、平板、桌面端
-- ⚡ **极致性能** — Vite 极速构建，Pinia 轻量状态管理，首屏加载飞快
+---
+
+## ✨ 核心特性
+
+### 1. 🌍 全球多地区覆盖
+深度覆盖土耳其 (TR)、尼日利亚 (NG)、埃及 (EG)、阿根廷 (AR)、巴基斯坦 (PK) 等主流低价区，以及中、美、港、欧等对比区。
+
+### 2. 💹 实时汇率换算
+内置自动汇率转换系统，所有价格均实时换算为 **CNY (人民币)** 方便直接对比。
+
+### 3. 📝 社区驱动的数据校对
+**[NEW]** 新增“一键纠错”功能。用户可以直接在对应价格条目上点击纠错图标，系统会自动预填相关信息，让社区共同维护数据的准确性。
+
+### 4. 🌓 丝滑的设计语言
+- **Liquid Glass 设计**：基于原生 CSS 变量构建的动态玻璃拟态系统。
+- **深色/浅色模式**：根据系统设置或手动切换，完美适配。
+- **全响应式**：针对 iOS/Android 移动端深度优化，单手操作无压力。
 
 ---
 
 ## 🛠️ 技术栈
 
-| 层级 | 技术 |
-|---|---|
-| 前端框架 | Vue 3 (Composition API) + Vite |
-| 状态管理 | Pinia |
-| 国际化 | Vue-i18n (中文 / English) |
-| 样式 | Vanilla CSS (Custom Glassmorphism System) |
-| 后端（可选） | Express + Mongoose + MongoDB |
-| 部署 | Vercel (前端) + GCP (后端) |
+- **框架**: [Vue 3](https://vuejs.org/) (Composition API)
+- **构建**: [Vite 5](https://vitejs.dev/)
+- **状态**: [Pinia](https://pinia.vuejs.org/)
+- **国际化**: [Vue-i18n](https://kazupon.github.io/vue-i18n/)
+- **安全**: 防爬虫/防调试安全机制封装
+- **SEO**: 动态元数据与 Schema.org 结构化数据支持
 
 ---
 
-## 🚀 快速启动
-
-### 前置要求
-
-- Node.js ≥ 18
-- npm ≥ 9
-
-### 1. 克隆项目
+## 🚀 快速开始
 
 ```bash
+# 克隆仓库
 git clone https://github.com/sharefuture1/subpriceGlobal.git
+
+# 进入目录
 cd subpriceGlobal
-```
 
-### 2. 安装依赖
-
-```bash
+# 安装依赖
 npm install
-```
 
-### 3. 启动开发服务器
-
-```bash
+# 启动开发服务器
 npm run dev
 ```
-
-访问 `http://localhost:5173` 即可开始使用。
-
-### 4. 构建生产版本
-
-```bash
-npm run build
-```
-
-输出目录为 `dist/`，可部署到 Vercel、Netlify 或任意静态托管服务。
 
 ---
 
 ## 📂 项目结构
 
-```
-subpriceGlobal/
-├── src/
-│   ├── App.vue                 # 主应用入口
-│   ├── components/
-│   │   ├── layout/             # 布局组件 (AppHeader, TopNav)
-│   │   └── features/           # 功能组件 (PriceItem, CategoryTabs, ...)
-│   ├── stores/                 # Pinia 状态 (productStore, configStore)
-│   ├── services/               # API 请求封装
-│   ├── data/                   # 产品/地区静态数据
-│   ├── i18n/                   # 中英文语言包
-│   └── styles/                 # 全局样式与 CSS 变量
-├── admin/                      # 管理后台 (独立 HTML)
-├── api/                        # 简易 Express API 层 (可选)
-├── public/                    # 静态资源 (sitemap, robots.txt)
-├── package.json
-└── vite.config.js
-```
+- `/src/components` - 采用原子化设计的 Vue 组件
+- `/src/stores` - 响应式全局状态管理
+- `/src/data` - 静态数据备份与模型
+- `/src/styles` - 全局设计系统代币 (Design Tokens)
+- `/admin` - 独立、轻量的管理后台系统
 
 ---
 
-## ⚙️ 部署说明
+## 💬 联系与支持
 
-### 前端部署（推荐 Vercel）
+如果你有任何建议或发现了数据错误，欢迎通过以下方式联系：
 
-1. 将仓库关联到 Vercel；
-2. 构建命令：`npm run build`，输出目录：`dist`；
-3. 无需额外环境变量（前端纯静态）。
-
-### 后端部署（如需启用数据管理）
-
-请参考 [price-compare-api](https://t.me/GlobalSubscription)（仓库未公开，请联系 @GlobalSubscription 获取），配置 `VITE_API_BASE` 环境变量。
-
----
-
-## 💬 联系 / Contact
-
-| 平台 | 地址 |
-|---|---|
-| 🌐 在线体验 | https://sub.future1.us/ |
-| 💬 Telegram | [@GlobalSubscription](https://t.me/GlobalSubscription) |
-| 💚 微信 | p137q773 |
-
----
-
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request！
-
-1. Fork 本仓库
-2. 创建特性分支：`git checkout -b feature/YourFeature`
-3. 提交更改：`git commit -m 'Add new feature'`
-4. 推送到分支：`git push origin feature/YourFeature`
-5. 开启 Pull Request
-
----
-
-## 📄 开源协议
-
-本项目基于 [MIT License](LICENSE) 开源。
+- **Telegram 频道**: [@GlobalSubscription](https://t.me/GlobalSubscription)
+- **GitHub Issues**: [提交问题](https://github.com/sharefuture1/subpriceGlobal/issues)
 
 ---
 
 <p align="center">
-  Made with ❤️ · <a href="https://sub.future1.us">sub.future1.us</a>
+  Made with ❤️ by <strong>Future1 Team</strong>
+</p>
+<p align="center">
+  <a href="https://sub.future1.us">sub.future1.us</a>
 </p>

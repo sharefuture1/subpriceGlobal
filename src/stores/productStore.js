@@ -1,19 +1,31 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import * as api from '../services/api.js';
-import { PRODUCTS as STATIC_PRODUCTS } from '../data/index.js';
+import { getStaticProducts, enrichProduct } from '../data/index.js';
 
 export const useProductStore = defineStore('product', () => {
   const loading = ref(false);
   const dataSource = ref('static');
-  const apiProducts = ref(null);
+  const apiProducts = ref({});
+  const staticProductsMap = ref({}); 
+  const loadedCategories = ref(new Set());
   const allCountries = ref([]);
 
   const currentCat = ref('ai');
   const currentProduct = ref('chatgpt');
   const annualMode = ref(false);
   const searchQuery = ref('');
+  const debouncedSearchQuery = ref('');
   const currentSort = ref('price');
+
+  // Debounce search query
+  let searchTimeout = null;
+  watch(searchQuery, (newVal) => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      debouncedSearchQuery.value = newVal;
+    }, 300);
+  });
 
   const fetchInitialData = async () => {
     // 1. Try to load from cache first for instant UI
@@ -23,27 +35,23 @@ export const useProductStore = defineStore('product', () => {
     if (cachedData && cachedTime) {
       const now = Date.now();
       const age = now - parseInt(cachedTime);
-      // If cache is less than 5 minutes old, use it and return
       if (age < 5 * 60 * 1000) {
         const parsed = JSON.parse(cachedData);
         allCountries.value = parsed.countries;
         apiProducts.value = parsed.products;
         dataSource.value = 'api';
-        console.log('[productStore] Using fresh cache');
         return;
       }
     }
 
-    console.log('[productStore] fetchInitialData START');
     loading.value = true;
     try {
       const countries = await api.getCountries();
       allCountries.value = countries;
-
       dataSource.value = 'api';
-      apiProducts.value = {};
-
+      
       const data = await api.getProducts();
+      const newApiProducts = {};
 
       for (const catKey of Object.keys(data)) {
         const catData = data[catKey];
@@ -61,10 +69,11 @@ export const useProductStore = defineStore('product', () => {
                 cny: entry.cny
               };
             });
-            apiProducts.value[p.id] = p;
+            newApiProducts[p.id] = p;
           }
         }
       }
+      apiProducts.value = newApiProducts;
 
       // Update cache
       localStorage.setItem('subprice_cache', JSON.stringify({
@@ -76,28 +85,41 @@ export const useProductStore = defineStore('product', () => {
     } catch (e) {
       console.error('fetchInitialData failed:', e.message);
       dataSource.value = 'static';
+      await loadStaticCategory(currentCat.value);
     } finally {
       loading.value = false;
     }
   };
 
+  const loadStaticCategory = async (cat) => {
+    if (loadedCategories.value.has(cat)) return;
+    const products = await getStaticProducts(cat);
+    const enriched = {};
+    products.forEach(p => {
+      enriched[p.id] = enrichProduct({ ...p, cat });
+    });
+    staticProductsMap.value = { ...staticProductsMap.value, ...enriched };
+    loadedCategories.value.add(cat);
+  };
+
   const allProducts = computed(() => {
-    if (dataSource.value === 'api' && apiProducts.value) return apiProducts.value;
-    return STATIC_PRODUCTS;
+    if (dataSource.value === 'api' && Object.keys(apiProducts.value).length > 0) {
+      return apiProducts.value;
+    }
+    return staticProductsMap.value;
   });
 
-  const filteredProducts = computed(() =>
-    Object.values(allProducts.value).filter(p => p.category === currentCat.value)
-  );
+  const filteredProducts = computed(() => {
+    const products = Object.values(allProducts.value);
+    // In static mode, we might only have one category loaded, so we filter what we have
+    return products.filter(p => p.cat === currentCat.value || p.category === currentCat.value);
+  });
 
   const baseList = computed(() => {
     let product = allProducts.value[currentProduct.value];
-    if (!product) {
+    if (!product && filteredProducts.value.length > 0) {
       const first = filteredProducts.value[0];
-      if (first) {
-        currentProduct.value = first.id;
-        product = first;
-      }
+      product = first;
     }
     if (!product) return [];
     let list = (product.enrichedCountries || []).map(c => ({ ...c }));
@@ -106,8 +128,8 @@ export const useProductStore = defineStore('product', () => {
   });
 
   const filteredList = computed(() => {
-    if (!searchQuery.value) return baseList.value;
-    const q = searchQuery.value.toLowerCase();
+    if (!debouncedSearchQuery.value) return baseList.value;
+    const q = debouncedSearchQuery.value.toLowerCase();
     return baseList.value.filter(c =>
       c.name.toLowerCase().includes(q) ||
       (c.nameZh && c.nameZh.toLowerCase().includes(q)) ||
@@ -137,8 +159,16 @@ export const useProductStore = defineStore('product', () => {
     };
   });
 
-  const setCategory = (cat) => {
+  const setCategory = async (cat) => {
     currentCat.value = cat;
+    if (dataSource.value === 'static' && !loadedCategories.value.has(cat)) {
+      loading.value = true;
+      try {
+        await loadStaticCategory(cat);
+      } finally {
+        loading.value = false;
+      }
+    }
     const first = filteredProducts.value[0];
     if (first) currentProduct.value = first.id;
     searchQuery.value = '';

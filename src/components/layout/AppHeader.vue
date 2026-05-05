@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="header-badge">
-      <span class="badge-dot"></span>
+      <img src="https://pub-b1ca55f26b8c4b68bed9070080a97700.r2.dev/subprice.jpg" alt="Logo" class="badge-logo" />
       Global Price Intelligence
     </div>
     <h1>{{ t('header.title') }}<br><span class="gradient-text">{{ t('header.titleAccent') }}</span></h1>
@@ -30,9 +30,9 @@ defineProps({
   background: var(--accent-dim); border: 1px solid var(--border-accent);
   border-radius: 100px;
 }
-.badge-dot {
-  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
-  animation: pulse 2s ease-in-out infinite;
+.badge-logo {
+  width: 24px; height: 24px; border-radius: 6px;
+  object-fit: cover; border: 1px solid var(--border-accent);
 }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
 .live-badge {

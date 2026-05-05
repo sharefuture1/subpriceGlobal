@@ -98,13 +98,27 @@
             :annual="productStore.annualMode"
             :min-price="minPrice"
             :global-max="globalMax"
+            @report="handleReport"
             role="listitem"
           />
           <div v-if="!productStore.sortedList.length" class="not-found">
-            <div class="not-found-icon" aria-hidden="true">🔍</div>
-            <div>没有找到匹配结果</div>
+            <div class="not-found-icon" aria-hidden="true">💨</div>
+            <div class="not-found-text">没有找到关于 "{{ productStore.searchQuery }}" 的匹配结果</div>
+            <button class="clear-search-btn" @click="productStore.searchQuery = ''">清除搜索内容</button>
           </div>
         </div>
+      </transition>
+
+      <!-- Back to top -->
+      <transition name="fade">
+        <button 
+          v-show="showBackToTop" 
+          class="back-to-top" 
+          @click="scrollToTop"
+          aria-label="Back to top"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 15l-6-6-6 6"/></svg>
+        </button>
       </transition>
 
       <!-- Disclaimer -->
@@ -139,6 +153,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { CATEGORIES } from './data/index.js'
 import * as api from './services/api.js'
+import { loadLocaleMessages } from './main.js'
 
 // Stores
 import { useConfigStore } from './stores/configStore.js'
@@ -165,10 +180,27 @@ const configStore = useConfigStore()
 const productStore = useProductStore()
 console.log('[APP] script setup running, productStore:', !!productStore.fetchInitialData)
 
-// Sync locale between Store and i18n
-watch(() => configStore.locale, (newLocale) => {
-  locale.value = newLocale
+// Back to top logic
+const showBackToTop = ref(false)
+const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+
+onMounted(() => {
+  console.log('[APP] onMounted fired, calling fetchInitialData');
+  productStore.fetchInitialData()
+
+  // Initialize Anti-Copy & Anti-Debug Measures
+  initSecurity()
+
+  window.addEventListener('scroll', () => {
+    showBackToTop.value = window.scrollY > 400
+  })
 })
+
+// Sync locale between Store and i18n
+watch(() => configStore.locale, async (newLocale) => {
+  await loadLocaleMessages(newLocale)
+  locale.value = newLocale
+}, { immediate: true })
 
 // Submit modal local state (keep here as it's transient UI state)
 const showSubmitModal = ref(false)
@@ -186,6 +218,20 @@ const submitProducts = computed(() => {
 watch(() => submitForm.value.category, () => { submitForm.value.productId = '' })
 
 async function openSubmitModal() {
+  showSubmitModal.value = true
+  submitMsg.value = ''
+  submitError.value = false
+}
+
+function handleReport(item) {
+  submitForm.value = {
+    category: productStore.currentCat,
+    productId: productStore.currentProduct,
+    countryId: item.id,
+    local: item.local,
+    cny: item.cny,
+    submitterNote: ''
+  }
   showSubmitModal.value = true
   submitMsg.value = ''
   submitError.value = false
@@ -240,14 +286,6 @@ async function submitData() {
   }
   submitting.value = false
 }
-
-onMounted(() => {
-  console.log('[APP] onMounted fired, calling fetchInitialData');
-  productStore.fetchInitialData()
-
-  // Initialize Anti-Copy & Anti-Debug Measures
-  initSecurity()
-})
 
 const minPrice = computed(() => productStore.sortedList.length ? Math.min(...productStore.sortedList.map(c => c.cny)) : 0)
 const globalMax = computed(() => {
@@ -314,7 +352,7 @@ watch([() => productStore.currentProduct, () => configStore.locale], () => {
   user-select: none;
 }
 
-.billing-row { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.billing-row { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding: 12px; border-radius: 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); }
 .billing-toggle { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
 .billing-toggle span { color: var(--muted); transition: color 0.2s; }
 .billing-toggle span:not(.dim) { color: var(--text); }
@@ -338,74 +376,101 @@ watch([() => productStore.currentProduct, () => configStore.locale], () => {
 }
 
 /* Search */
-.search-wrap { position: relative; margin-bottom: 14px; }
-.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 15px; pointer-events: none; }
+.search-wrap { position: relative; margin-bottom: 20px; }
+.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 15px; pointer-events: none; opacity: 0.6; }
 .search-input {
-  width: 100%; padding: 12px 42px;
-  background: var(--input-bg);
-  border: 1px solid var(--border); border-radius: 14px;
+  width: 100%; padding: 14px 42px;
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border); border-radius: 16px;
   color: var(--text); font-size: 14px; font-family: var(--font-sans); outline: none;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.search-input:focus { border-color: var(--accent); background: var(--card); box-shadow: 0 0 0 3px var(--glow); }
-.search-input::placeholder { color: var(--muted); }
+.search-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.06); box-shadow: 0 0 0 4px var(--glow); transform: translateY(-1px); }
+.search-input::placeholder { color: var(--muted); opacity: 0.7; }
 .search-clear {
   position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
   background: var(--border); border: none; color: var(--muted); cursor: pointer;
-  width: 20px; height: 20px; border-radius: 50%; font-size: 10px; line-height: 1;
-  display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+  width: 22px; height: 22px; border-radius: 50%; font-size: 10px; line-height: 1;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
 }
-.search-clear:hover { background: var(--accent2); color: #fff; }
+.search-clear:hover { background: var(--danger); color: #fff; transform: scale(1.1); }
 
 /* Sort */
-.sort-bar { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.sort-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
 .sort-btn {
-  padding: 5px 13px; border-radius: 8px;
-  border: 1px solid var(--border); background: transparent;
+  padding: 6px 14px; border-radius: 10px;
+  border: 1px solid var(--border); background: rgba(255,255,255,0.02);
   color: var(--muted); font-size: 12px; font-weight: 600;
-  cursor: pointer; transition: all 0.15s; font-family: var(--font-sans);
+  cursor: pointer; transition: all 0.2s; font-family: var(--font-sans);
 }
-.sort-btn:hover { border-color: var(--blue); color: var(--blue); background: rgba(91,156,255,0.06); }
-.sort-btn.active { border-color: var(--blue); color: var(--blue); background: rgba(91,156,255,0.1); font-weight: 700; }
+.sort-btn:hover { border-color: var(--blue); color: var(--blue); background: rgba(91,156,255,0.08); }
+.sort-btn.active { border-color: var(--blue); color: var(--blue); background: rgba(91,156,255,0.12); font-weight: 700; box-shadow: 0 0 15px rgba(91,156,255,0.15); }
 
 /* Price list */
-.price-list { display: flex; flex-direction: column; gap: 8px; }
-.not-found { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
-.not-found-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
+.price-list { display: flex; flex-direction: column; gap: 10px; }
+.not-found { text-align: center; padding: 80px 20px; color: var(--muted); font-size: 14px; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed var(--border); }
+.not-found-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
 
 /* Note */
 .note {
-  margin-top: 24px; padding: 14px 16px;
-  background: var(--note-bg); border: 1px solid var(--note-border);
-  border-radius: 14px; font-size: 12px; color: var(--muted2); line-height: 1.7;
-  display: flex; gap: 10px; align-items: flex-start;
+  margin-top: 32px; padding: 18px 20px;
+  background: rgba(255,107,53,0.03); border: 1px solid var(--note-border);
+  backdrop-filter: blur(10px);
+  border-radius: 18px; font-size: 12px; color: var(--muted2); line-height: 1.8;
+  display: flex; gap: 12px; align-items: flex-start;
 }
-.note-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
-.note strong { color: var(--accent2); }
+.note-icon { font-size: 18px; flex-shrink: 0; margin-top: -2px; }
+.note strong { color: var(--accent2); font-weight: 800; }
 
 /* Loading */
-.loading { text-align: center; padding: 64px 0; }
+.loading { text-align: center; padding: 80px 0; }
 .loading-ring {
-  width: 40px; height: 40px; margin: 0 auto 12px;
-  border: 3px solid var(--border); border-top-color: var(--accent);
-  border-radius: 50%; animation: spin 0.8s linear infinite;
+  width: 44px; height: 44px; margin: 0 auto 16px;
+  border: 3.5px solid var(--border); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 0.8s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
 }
-.loading-text { color: var(--muted); font-size: 13px; font-weight: 500; }
+.loading-text { color: var(--muted); font-size: 14px; font-weight: 600; letter-spacing: 0.5px; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Back to top */
+.back-to-top {
+  position: fixed; bottom: 32px; right: 32px;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  color: var(--text); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 90;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+.back-to-top:hover {
+  background: var(--accent); color: #000;
+  transform: translateY(-6px) scale(1.05); box-shadow: 0 12px 30px var(--glow-strong);
+  border-color: var(--accent);
+}
+
+.not-found-text { margin-bottom: 16px; font-weight: 600; color: var(--text); }
+.clear-search-btn {
+  padding: 8px 20px; border-radius: 12px;
+  background: var(--accent-dim); color: var(--accent);
+  border: 1px solid var(--border-accent); cursor: pointer;
+  font-size: 13px; font-weight: 700; transition: all 0.25s;
+}
+.clear-search-btn:hover { background: var(--accent); color: #000; transform: translateY(-2px); }
 
 /* List Transitions */
 .list-fade-enter-active,
 .list-fade-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .list-fade-enter-from {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(20px) scale(0.98);
 }
 
 .list-fade-leave-to {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-20px) scale(0.98);
 }
 </style>

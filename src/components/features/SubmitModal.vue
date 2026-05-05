@@ -3,7 +3,10 @@
     <div v-if="show" class="modal-overlay" @click.self="$emit('close')">
       <div class="modal">
         <div class="modal-header">
-          <h3>{{ activeTab === 'price' ? '📝 提交价格数据' : '💡 提交产品需求' }}</h3>
+          <div class="modal-title-wrap">
+            <img src="https://pub-b1ca55f26b8c4b68bed9070080a97700.r2.dev/subprice.jpg" alt="Logo" class="modal-logo" />
+            <h3>{{ activeTab === 'price' ? '📝 提交价格数据' : '💡 提交产品需求' }}</h3>
+          </div>
           <button class="modal-close" @click="$emit('close')">✕</button>
         </div>
 
@@ -19,7 +22,10 @@
 
         <!-- Price submission tab -->
         <div v-if="activeTab === 'price'">
-          <p class="modal-desc">发现价格不对？提交正确价格，审核通过后自动更新。</p>
+          <p v-if="form.productId && form.countryId" class="modal-desc context-box">
+            📍 正在为 <strong>{{ availableProducts.find(p => p.id === form.productId)?.name }}</strong> 的 <strong>{{ countries.find(c => c.id === form.countryId)?.nameZh }}</strong> 区域纠错
+          </p>
+          <p v-else class="modal-desc">发现价格不对？提交正确价格，审核通过后自动更新。</p>
           <div class="form-grid">
             <div class="form-row">
               <label>分类</label>
@@ -169,6 +175,8 @@ watch(() => props.show, (val) => {
   box-shadow: 0 24px 80px rgba(0,0,0,0.4);
 }
 .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.modal-title-wrap { display: flex; align-items: center; gap: 12px; }
+.modal-logo { width: 36px; height: 36px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border); }
 .modal h3 { font-family: var(--font-sans); font-size: 18px; font-weight: 800; color: var(--accent); }
 .modal-close {
   width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--border);
@@ -196,6 +204,14 @@ watch(() => props.show, (val) => {
 }
 
 .modal-desc { font-size: 12px; color: var(--muted2); margin-bottom: 22px; line-height: 1.6; }
+.modal-desc.context-box {
+  background: var(--accent-dim);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-accent);
+}
+.modal-desc.context-box strong { color: var(--accent); }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .form-row { display: flex; flex-direction: column; }
 .form-row.full { grid-column: 1 / -1; }

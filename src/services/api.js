@@ -1,7 +1,11 @@
-const BASE_URL = import.meta.env.VITE_API_BASE || 'https://price-compare-api-zh09.onrender.com';
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const BASE_URL = isLocal 
+  ? 'http://localhost:3000' 
+  : (import.meta.env.VITE_API_BASE || 'https://subapi.future1.us');
+
 console.log('[api.js] BASE_URL:', BASE_URL);
 
-const getSignature = () => btoa(`subprice-${Math.floor(Date.now() / 100000)}`);
+const getSignature = () => btoa(`subprice-${Date.now()}`);
 
 export const apiFetch = async (endpoint, options = {}) => {
   const sig = getSignature();
